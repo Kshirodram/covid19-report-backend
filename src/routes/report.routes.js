@@ -112,7 +112,7 @@ export default (app) => {
         countryCode,
       });
     } else {
-      // default to 7 days of data
+      // default to 30 days of data
       // current date we are taking as previous date
       // because data will be refresh every mid night for currrent date
       data = await Report.aggregate([
@@ -132,7 +132,7 @@ export default (app) => {
                       $gte: [
                         "$$item.date",
                         formatDate(
-                          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
                         ),
                       ],
                     },
