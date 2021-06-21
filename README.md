@@ -1,12 +1,17 @@
 # Data visulization API
 
-## Prerequisite
+## Prerequisite 
 To run the project you need to have [Node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/) installed in your system. You can check that using 
 ```sh
 node -v
 npm -v
 ```
 *Note that to build and run the app you need `node>=10.x.x`*
+
+## Setup
+To setup the project please clone the repo and go inside the directory run
+
+#### `npm run install`
 
 ## Available Scripts
 
@@ -19,10 +24,10 @@ Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 It uses `nodemon` on edit it will automatically restart the server
 
-### `npm run test`
+#### `npm run test`
 To run the unit test cases
 
-### `npm run start`
+#### `npm run start`
 
 To run the app in `production` mode
 
