@@ -31,7 +31,7 @@ To run the unit test cases
 
 To run the app in `production` mode
 
-The deployed version of the API url can be found [here]()
+The deployed version of the API url can be found [here](https://covid19-report-backend.herokuapp.com/)
 
 We are consuming [covid19 time series data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series). Thank you *Johns Hopkins University* :heart_eyes:
 
