@@ -1,4 +1,4 @@
-# Data visulization API
+# Data visulization API [WIP]
 
 ## Prerequisite 
 To run the project you need to have [Node.js](http://nodejs.org/) and [npm](https://www.npmjs.com/) installed in your system. You can check that using 
