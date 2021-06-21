@@ -1,0 +1,27 @@
+{
+  "name": "covid19-api",
+  "version": "1.0.0",
+  "description": "Sample covid19 API",
+  "main": "index.js",
+  "engines": {
+    "node": ">=10.20.1"
+  },
+  "scripts": {
+    "dev": "nodemon ./index.js --ignore 'data/*'",
+    "start": "node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/register": "^7.9.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.14"
+  }
+}
