@@ -5,8 +5,10 @@ import cors from "cors";
 
 // Import all the routes
 import prepareDataRoutes from "./routes/prepareData.routes";
-import reportRoutes from "./routes/report.routes";
 import countriesRoutes from "./routes/countries.routes";
+import confirmedRoutes from "./routes/confirmed.routes";
+import recoveredRoutes from "./routes/recovered.routes";
+import deathsRoutes from "./routes/deaths.routes";
 
 const PORT = process.env.PORT || 3001;
 
@@ -25,16 +27,17 @@ mongoose
     const app = express();
     app.use(compression());
     app.use(cors());
-  
+
     // register routes
     prepareDataRoutes(app);
-    reportRoutes(app);
     countriesRoutes(app);
-    
+    confirmedRoutes(app);
+    recoveredRoutes(app);
+    deathsRoutes(app);
+
     app.listen(PORT, () => {
       console.log(`App is running on localhost:${PORT}`);
     });
-    
   })
   .catch((err) => {
     console.error("Error connecting to mongo", err);

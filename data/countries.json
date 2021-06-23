@@ -38,7 +38,7 @@
   { "name": "Burundi", "value": "BI", "states": null },
   { "name": "Benin", "value": "BJ", "states": null },
   { "name": "Bermuda", "value": "BM", "states": null },
-  { "name": "Brunei Darussalam", "value": "BN", "states": null },
+  { "name": "Brunei", "value": "BN", "states": null },
   { "name": "Bolivia", "value": "BO", "states": null },
   {
     "name": "Brazil",
@@ -322,7 +322,7 @@
   { "name": "Reunion", "value": "RE", "states": null },
   { "name": "Romania", "value": "RO", "states": null },
   { "name": "Serbia", "value": "RS", "states": null },
-  { "name": "Russian Federation", "value": "RU", "states": null },
+  { "name": "Russia", "value": "RU", "states": null },
   { "name": "Rwanda", "value": "RW", "states": null },
   { "name": "Saudi Arabia", "value": "SA", "states": null },
   { "name": "Solomon Islands", "value": "SB", "states": null },

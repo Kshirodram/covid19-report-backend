@@ -1,12 +1,11 @@
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
-
 import _ from "lodash";
 
-import countriesData from "../../data/countries.json";
+import { formatDate } from "../utils";
 
-import {formatDate} from "../utils";
+import countriesData from "../../data/countries.json";
 
 const calculateDelta = (previousVal, currentVal) => {
   if (
@@ -15,7 +14,8 @@ const calculateDelta = (previousVal, currentVal) => {
     typeof previousVal === "number" &&
     typeof currentVal === "number"
   ) {
-    return currentVal - previousVal;
+    const diff = currentVal - previousVal;
+    return diff >= 0 ? diff : 0;
   } else if (currentVal && typeof currentVal === "number") {
     return currentVal;
   } else {
@@ -62,14 +62,8 @@ export default (app) => {
   // merge the us and global data
   app.get("/prepare/init", (req, res) => {
     const allData = {
-      confirmed: [
-        ...require("../../data/raw/covid19_confirmed_global.json"),
-        ...require("../../data/raw/covid19_confirmed_US.json"),
-      ],
-      deaths: [
-        ...require("../../data/raw/covid19_deaths_global.json"),
-        ...require("../../data/raw/covid19_deaths_US.json"),
-      ],
+      confirmed: require("../../data/raw/covid19_confirmed_global.json"),
+      deaths: require("../../data/raw/covid19_deaths_global.json"),
       recovered: require("../../data/raw/covid19_recovered_global.json"),
     };
 
@@ -91,7 +85,6 @@ export default (app) => {
       "countryCode",
       "stateCode",
     ];
-    let mergedData = [];
     for (let i = 0; i < objKeys.length; i++) {
       const reportType = objKeys[i];
       const reportedData = allData[reportType];
@@ -120,8 +113,8 @@ export default (app) => {
           if (dateRegex.test(key) && PRESERVED_KEYS.indexOf(key) === -1) {
             return {
               [reportType]: parentObj[key],
-              date: formatDate(new Date(key)),
-              [KEY_MAP[reportType]]: calculateDelta(
+              date: formatDate(key),
+              ["casesPerDay"]: calculateDelta(
                 parentObj[objectKeys[i - 1]],
                 parentObj[key]
               ),
@@ -135,50 +128,53 @@ export default (app) => {
       // combine sub regions data as US has
       // because we are ignoring those cases
       // data will be represented on state/country level only
-      const combinedData = groupedData.reduce((acc, obj) => {
-        const existing = acc.filter((v, i) => {
-          return v.state === obj.state && v.country === obj.country;
-        });
-        if (existing.length) {
-          Object.keys(obj.data).forEach((key) => {
-            const lastObjInArr = acc[acc.length - 1];
-            lastObjInArr.data[key][KEY_MAP[reportType]] = addData(
-              lastObjInArr.data[key][KEY_MAP[reportType]],
-              obj.data[key][KEY_MAP[reportType]]
-            );
-            lastObjInArr.data[key][reportType] = addData(
-              lastObjInArr.data[key][reportType],
-              obj.data[key][reportType]
-            );
-          });
-        } else {
-          acc.push(obj);
-        }
-        return acc;
-      }, []);
-      
-      mergedData = _.merge([...mergedData], [...combinedData]);
-    }
+      // const combinedData = groupedData.reduce((acc, obj) => {
+      //   const existing = acc.filter((v, i) => {
+      //     return v.state === obj.state && v.country === obj.country;
+      //   });
+      //   if (existing.length) {
+      //     Object.keys(obj.data).forEach((key) => {
+      //       const lastObjInArr = acc[acc.length - 1];
+      //       lastObjInArr.data[key]["casesPerDay"] = addData(
+      //         lastObjInArr.data[key]["casesPerDay"],
+      //         obj.data[key]["casesPerDay"]
+      //       );
+      //       lastObjInArr.data[key][reportType] = addData(
+      //         lastObjInArr.data[key][reportType],
+      //         obj.data[key][reportType]
+      //       );
+      //     });
+      //   } else {
+      //     acc.push(obj);
+      //   }
+      //   return acc;
+      // }, []);
 
-    const filePath = path.resolve(__dirname, "../../data/report.json");
+      const filePath = path.resolve(__dirname, `../../data/${reportType}.json`);
 
-    fs.writeFile(filePath, JSON.stringify(mergedData), "utf8", function (err) {
-      if (err) {
-        console.log("An error occured while writing JSON Object to File.");
-        return console.log(err);
-      } else {
-        console.log("Updating db server..." + filePath);
-        const command = `mongoimport --uri "mongodb+srv://admin:welcome%40123@cluster0-e6ksx.mongodb.net/covid19?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true" --collection report --drop --file ${filePath} --jsonArray`;
-        exec(command, (err, stdout, stderr) => {
+      fs.writeFile(
+        filePath,
+        JSON.stringify(groupedData),
+        "utf8",
+        function (err) {
           if (err) {
-            console.error(`exec error: ${err}`);
-            return;
+            console.log("An error occured while writing JSON Object to File.");
+            return console.log(err);
+          } else {
+            console.log("Updating db server..." + filePath);
+            const command = `mongoimport --uri "mongodb+srv://admin:welcome%40123@cluster0-e6ksx.mongodb.net/covid19?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true" --collection ${reportType} --drop --file ${filePath} --jsonArray`;
+            exec(command, (err, stdout, stderr) => {
+              if (err) {
+                console.error(`exec error: ${err}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+              console.error(`stderr: ${stderr}`);
+            });
           }
-          console.log(`stdout: ${stdout}`);
-          console.error(`stderr: ${stderr}`);
-        });
-      }
-    });
+        }
+      );
+    }
     res.send({ message: `files created` });
   });
 };
